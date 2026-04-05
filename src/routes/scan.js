@@ -1,20 +1,26 @@
 const express= require("express")
 const router= express.Router()
-const {scanIP} = require("../services/virustotal")
-const {checkIP}= require("../services/abuseipdb")
+const {analyzeIP}= require('../services/threatAnalyser')
 
 //passing an ip address to scan it using the two APIS
 router.get('/ip/:address', async (req,res) => {
+  const ip= req.params.address
+  
+  //to check for valid ips
+  const ipRegex = /^(\d{1,3}\.){3}\d{1,3}$/;
+    if (!ipRegex.test(ip)) {
+        return res.status(400).json({ 
+            error: 'Invalid IP address format' 
+        });
+    }
+  
   try {
-    const vtData= await scanIP(req.params.address)
-    const abuseData= await checkIP(req.params.address)
-    res.json({
-      virusTotal: vtData,
-      abuseipdb: abuseData
-    })
+    const report= await analyzeIP(ip)
+    res.json(report)
   } catch (error) {
-    console.log('Full error:', error.response?.data || error.message);
-    res.status(500).json({error: error.message})
+    const status = error.response?.status || 500;
+    const message = error.response?.data?.error?.message || error.message;
+    res.status(status).json({ error: message });
   }
 }
 )
