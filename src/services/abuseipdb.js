@@ -6,7 +6,7 @@ async function checkIP(ip) {
     const response= await axios.get(`${ABUSEIPDB_BASE_URL}/check`,{
         headers:{
             'Key':process.env.ABUSEIPDB_API_KEY,
-            'Accept':'application/json'
+            'Accept':'application/json' //the data format of acceptance
         },
         params: {
             ipAddress: ip,
