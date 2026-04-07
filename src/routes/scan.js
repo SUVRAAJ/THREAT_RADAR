@@ -1,9 +1,16 @@
 const express= require("express")
 const router= express.Router()
 const {analyzeIP}= require('../services/threatAnalyser')
+const { getCacheStats } = require('../services/cache');
+
+//route to get cache stats
+router.get('/cache/stats', (req, res) => {
+    res.json(getCacheStats());
+});
 
 //passing an ip address to scan it using the two APIS
 router.get('/ip/:address', async (req,res) => {
+  //acquiring the ip from url
   const ip= req.params.address
   
   //to check for valid ips
