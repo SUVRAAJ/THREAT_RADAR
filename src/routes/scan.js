@@ -3,6 +3,7 @@ const router= express.Router()
 const {analyzeIP}= require('../services/threatAnalyser')
 const { getCacheStats } = require('../services/cache');
 const { scanURL } = require('../services/urlscanner')
+const {saveScan,getRecentScans,getScansByTarget}= require('../database/scanRepository')
 
 //route to get cache stats
 router.get('/cache/stats', (req, res) => {
@@ -20,7 +21,7 @@ function detectInputType(input) {
 router.get('/analyze',async (req,res) => {
   const {target}= req.query
   const cleanTarget= target.trim()
-  if(!target) {
+  if(!cleanTarget) {
     return res.status(400).json({error:'Please provide a valid Target'})
   }
 
@@ -28,6 +29,13 @@ router.get('/analyze',async (req,res) => {
 
   try {
     const report= type==='ip'?await analyzeIP(target): await scanURL(target)
+
+    if(!report.fromCache)
+    {
+      saveScan(cleanTarget,type,report)
+      console.log(`Saved scan for ${cleanTarget} to Database`)
+    }
+
     res.json({type,...report})
   } catch (error) {
     const status = error.response?.status || 500;
@@ -81,5 +89,22 @@ router.get('/ip/:address', async (req,res) => {
   }
 }
 )
+
+router.get('/history', (req,res) => {
+  const scans= getRecentScans()
+  res.json(scans)
+}
+)
+
+router.get('/history/:target',(req,res) => {
+  const scans= getScansByTarget(req.params.target.trim())
+  if(scans.length===0)
+  {
+    return res.status(404).json({message:'No scans found for this target'})
+  }
+  res.json(scans)
+}
+)
+
 
 module.exports= router
