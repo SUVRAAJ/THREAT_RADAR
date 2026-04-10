@@ -1,3 +1,4 @@
+//exporting all necessary modules
 const express= require("express")
 const router= express.Router()
 const {analyzeIP}= require('../services/threatAnalyser')
@@ -90,12 +91,14 @@ router.get('/ip/:address', async (req,res) => {
 }
 )
 
+//route to get history of recent 20 scans
 router.get('/history', (req,res) => {
   const scans= getRecentScans()
   res.json(scans)
 }
 )
 
+//route to get history of a particular target
 router.get('/history/:target',(req,res) => {
   const scans= getScansByTarget(req.params.target.trim())
   if(scans.length===0)
@@ -105,6 +108,83 @@ router.get('/history/:target',(req,res) => {
   res.json(scans)
 }
 )
+
+//making a route for bulk scan and allowing the summary report
+
+router.post('/bulk', async (req,res) => {
+  
+  const {targets}= req.body
+
+  //some error handling
+  if(!targets || !Array.isArray(targets) || targets.length===0)
+  {
+    return res.status(400).json({error:"Please provide a array of targets"})
+  }
+
+  if(targets.length>10)
+  {
+    return res.status(400).json({error:"Maximum 10 targets per bulk scan"})
+  }
+
+  //cleaning targets before fetching and calling the apis
+  const cleanTargets= targets.map(t=> t.trim()).filter(t=>t.length>0)
+
+
+
+  const scanPromises= cleanTargets.map(target=>{
+    const type= detectInputType(target)
+    return type=== 'ip'? analyzeIP(target).then(report=>({target,type,...report}))
+    : scanURL(target).then(report=>({target,type,...report}))
+  }
+  )
+
+  const results= await Promise.allSettled(scanPromises)
+
+  const processed=[]
+
+  //limiting rate of sending api calls
+  for(let i=0;i<cleanTargets.length;i++)
+  {
+    const target= cleanTargets[i]
+    const type= detectInputType(target)
+
+    try {
+      const report= type=== 'ip'? await analyzeIP(target):
+                                  await scanURL(target)
+      
+      if(!report.fromCache)
+      {
+        saveScan(target,type,report)
+        //only delay it if it was a fresh scan and not cached
+        if(i<cleanTargets.length-1)
+        {
+          await new Promise(resolve => setTimeout(resolve, 1500));
+        }
+      }
+
+       processed.push({ success: true, data: { target, type, ...report } });
+    } catch (error) {
+      processed.push({
+            success: false,
+            target,
+            error: error.response?.data?.error?.message || error.message
+        });
+    }
+  }
+
+  const summary = {
+        total: cleanTargets.length,
+        successful: processed.filter(r => r.success).length,
+        failed: processed.filter(r => !r.success).length,
+        critical: processed.filter(r => r.success && r.data.threatLevel === 'CRITICAL').length,
+        dangerous: processed.filter(r => r.success && r.data.threatLevel === 'DANGEROUS').length,
+        suspicious: processed.filter(r => r.success && r.data.threatLevel === 'SUSPICIOUS').length,
+        safe: processed.filter(r => r.success && r.data.threatLevel === 'SAFE').length,
+    };
+
+    res.json({ summary, results: processed });
+})
+
 
 
 module.exports= router
