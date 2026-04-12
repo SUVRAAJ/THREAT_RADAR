@@ -3,7 +3,11 @@ require('dotenv').config()
 const express= require('express')
 const app= express()
 const scanRouter= require('./routes/scan')
+const cors= require('cors')
 //middlewares
+app.use(cors({
+  origin: 'http://localhost:5173'
+}))
 app.use(express.json())
 //routers
 app.use('/scan',scanRouter)
