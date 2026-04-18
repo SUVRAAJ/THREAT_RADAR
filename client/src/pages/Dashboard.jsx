@@ -1,6 +1,10 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
+import ScoreBar from '../components/ScoreBar'
+import ThreatBadge from '../components/ThreatBadge'
+import IPCard from '../components/IPcard'
+import EngineList from '../components/Enginelist'
 const Dashboard = () => {
   const navigate= useNavigate()
   const [target, setTarget] = useState('')
@@ -105,15 +109,56 @@ const Dashboard = () => {
           </div>
         )}
 
-        {/* Empty state */}
         {!report && !loading && !error && (
-          <div style={{ textAlign: 'center', padding: '80px 0', color: '#222' }}>
-            <div style={{ fontSize: '48px', marginBottom: '16px', fontFamily: 'monospace' }}>[ ]</div>
-            <div style={{ fontSize: '13px', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-              Enter a target to begin scanning
-            </div>
+  <div style={{ textAlign: 'center', padding: '80px 0', color: '#222' }}>
+    <div style={{ fontSize: '48px', marginBottom: '16px', fontFamily: 'monospace' }}>[ ]</div>
+    <div style={{ fontSize: '13px', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+      Enter a target to begin scanning
+    </div>
+  </div>
+)}
+
+        {/* Empty state */}
+        {report && (
+  <div style={{ animation: 'fadeUp 0.5s ease forwards' }}>
+    
+    {/* Top row */}
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '16px', marginBottom: '16px' }}>
+      
+      {/* Main threat card */}
+      <div style={{ background: '#111', border: '1px solid #1a1a1a', padding: '28px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
+          <div style={{ fontSize: '11px', color: '#444', letterSpacing: '0.12em', textTransform: 'uppercase' }}>
+            // Threat Report
           </div>
-        )}
+          <ThreatBadge level={report.threatLevel} />
+        </div>
+
+        <div style={{ fontSize: '32px', fontWeight: 500, color: '#fff', fontFamily: 'monospace', marginBottom: '4px' }}>
+          {report.ip || report.url}
+        </div>
+        <div style={{ fontSize: '13px', color: '#333', marginBottom: '28px' }}>
+          {report.type?.toUpperCase()} · {report.virustotal?.owner || ''} · {report.virustotal?.country || ''}
+        </div>
+
+        <ScoreBar label="VirusTotal Score" score={report.virustotal?.threatScore || 0} delay={0} />
+        <ScoreBar label="AbuseIPDB Score" score={report.abuseipdb?.abuseScore || 0} delay={200} />
+        <ScoreBar label="Final Score" score={report.finalScore || 0} delay={400} />
+
+        <div style={{ marginTop: '8px', fontSize: '12px', color: '#333' }}>
+  Scanned {new Date(report.scannedAt).toLocaleString()} · {report.fromCache ? '[CACHED]' : '[LIVE SCAN]'}
+</div>
+      </div>
+
+      {/* IP Card */}
+      <IPCard virustotal={report.virustotal} abuseipdb={report.abuseipdb} />
+    </div>
+
+    {/* Engine breakdown */}
+    <EngineList engines={report.virustotal?.engines} />
+
+  </div>
+)}
 
         {/* Loading state */}
         {loading && (
@@ -123,16 +168,17 @@ const Dashboard = () => {
             </div>
           </div>
         )}
-
-        {/* Report — placeholder for now */}
-        {report && (
-          <div style={{ color: '#fff', fontSize: '13px' }}>
-            <pre>{JSON.stringify(report, null, 2)}</pre>
-          </div>
-        )}
       </div>
+
+      <style>{`
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+`}</style>
     </div>
   )
 }
+
 
 export default Dashboard
