@@ -5,13 +5,20 @@ import ScoreBar from '../components/ScoreBar'
 import ThreatBadge from '../components/ThreatBadge'
 import IPCard from '../components/IPcard'
 import EngineList from '../components/Enginelist'
+import { generateThreatReport } from '../utilities/generatePDF'
 const Dashboard = () => {
   const navigate= useNavigate()
   const [target, setTarget] = useState('')
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(false)
   const [report, setReport] = useState(null)
+  const [copied, setCopied] = useState(false)
   
+  const handleCopy = () => {
+  navigator.clipboard.writeText(`${window.location.origin}/report/${report.scanId}`)
+  setCopied(true)
+  setTimeout(() => setCopied(false), 2000)
+}
   //handler functions
   const handleScan= async () => {
     if(!target.trim()) return
@@ -23,6 +30,7 @@ const Dashboard = () => {
       //calling the api for scan
       const res= await fetch(`http://localhost:8080/scan/analyze?target=${target.trim()}`)
       const data= await res.json()
+      
       if (data.error) throw new Error(data.error)
       setReport(data)
     } catch (error) {
@@ -128,11 +136,37 @@ const Dashboard = () => {
       {/* Main threat card */}
       <div style={{ background: '#111', border: '1px solid #1a1a1a', padding: '28px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
-          <div style={{ fontSize: '11px', color: '#444', letterSpacing: '0.12em', textTransform: 'uppercase' }}>
-            // Threat Report
-          </div>
-          <ThreatBadge level={report.threatLevel} />
-        </div>
+  <div style={{ fontSize: '11px', color: '#444', letterSpacing: '0.12em', textTransform: 'uppercase' }}>
+    // Threat Report
+  </div>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+    <ThreatBadge level={report.threatLevel} />
+    <button
+      onClick={() => generateThreatReport(report)}
+      style={{
+        background: 'none', border: '1px solid #333', color: '#555',
+        padding: '4px 14px', fontSize: '11px', cursor: 'pointer',
+        letterSpacing: '0.08em', textTransform: 'uppercase', transition: 'all 0.2s'
+      }}
+      onMouseEnter={e => { e.target.style.borderColor = '#ff3c3c'; e.target.style.color = '#fff' }}
+      onMouseLeave={e => { e.target.style.borderColor = '#333'; e.target.style.color = '#555' }}
+    >
+      Export PDF →
+    </button>
+    <button
+  onClick={handleCopy}
+  style={{
+    background: copied ? '#00d08422' : 'none',
+    border: `1px solid ${copied ? '#00d084' : '#333'}`,
+    color: copied ? '#00d084' : '#555',
+    padding: '4px 14px', fontSize: '11px', cursor: 'pointer',
+    letterSpacing: '0.08em', textTransform: 'uppercase', transition: 'all 0.2s'
+  }}
+>
+  {copied ? 'Copied! ✓' : 'Share →'}
+</button>
+  </div>
+</div>
 
         <div style={{ fontSize: '32px', fontWeight: 500, color: '#fff', fontFamily: 'monospace', marginBottom: '4px' }}>
           {report.ip || report.url}
