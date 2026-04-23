@@ -5,7 +5,7 @@ function saveScan(target,type,report)
 {
     const stmt= db.prepare(`INSERT INTO scans(target,type,finalScore,threatLevel,fullReport,scannedAt) VALUES (?,?,?,?,?,?)`)
 
-    stmt.run(
+   const result= stmt.run(
         target,
         type,
         report.finalScore,
@@ -13,6 +13,8 @@ function saveScan(target,type,report)
         JSON.stringify(report),
         report.scannedAt
     )
+
+    return result.lastInsertRowid;
 }
 
 //writing a query for getting N amount of last scanshere by default it is 20
@@ -32,4 +34,16 @@ function getScansByTarget(target)
     }))
 }
 
-module.exports={saveScan,getRecentScans,getScansByTarget}
+function getReportById(id)
+{
+    const stmt= db.prepare(`SELECT * FROM scans WHERE id=?`)
+    const row= stmt.get(id);
+
+    if(!row) return null
+    return {
+        ...row,
+        fullReport: row.fullReport ? JSON.parse(row.fullReport) : null
+    };
+}
+
+module.exports={saveScan,getRecentScans,getScansByTarget,getReportById}

@@ -6,6 +6,7 @@ import Landing from './pages/Landing'
 import Dashboard from './pages/Dashboard'
 import Bulk from './pages/Bulk'
 import History from './pages/History'
+import Report from './pages/Report'
 function App() {
 
   return (
@@ -16,6 +17,7 @@ function App() {
           <Route path='/dashboard' element={<Dashboard/>}></Route>
           <Route path='/history' element={<History/>}></Route>
           <Route path='/bulk' element={<Bulk/>}></Route>
+          <Route path='/report/:id' element={<Report/>}></Route>
         </Routes>
       </BrowserRouter>
     </>

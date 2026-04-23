@@ -4,7 +4,7 @@ const router= express.Router()
 const {analyzeIP}= require('../services/threatAnalyser')
 const { getCacheStats } = require('../services/cache');
 const { scanURL } = require('../services/urlscanner')
-const {saveScan,getRecentScans,getScansByTarget}= require('../database/scanRepository')
+const {saveScan,getRecentScans,getScansByTarget,getReportById}= require('../database/scanRepository')
 
 //route to get cache stats
 router.get('/cache/stats', (req, res) => {
@@ -33,10 +33,16 @@ router.get('/analyze',async (req,res) => {
 
     if(!report.fromCache)
     {
-      saveScan(cleanTarget,type,report)
+      const id=saveScan(cleanTarget,type,report)
+      report.scanId=id
       console.log(`Saved scan for ${cleanTarget} to Database`)
     }
-
+    else {
+    const existing = getScansByTarget(cleanTarget);
+    if (existing.length > 0) {
+        report.scanId = existing[0].id;
+    }
+}
     res.json({type,...report})
   } catch (error) {
     const status = error.response?.status || 500;
@@ -106,6 +112,20 @@ router.get('/history/:target',(req,res) => {
     return res.status(404).json({message:'No scans found for this target'})
   }
   res.json(scans)
+}
+)
+
+//route for report share
+router.get('/report/:id', (req,res) => {
+  const id= parseInt(req.params.id)
+  if (isNaN(id)) {
+    return res.status(400).json({ error: 'Invalid report ID' });
+  }
+  const report= getReportById(id)
+  if (!report) {
+    return res.status(404).json({ error: 'Report not found' });
+  }
+  res.json(report)
 }
 )
 
