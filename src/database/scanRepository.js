@@ -46,4 +46,28 @@ function getReportById(id)
     };
 }
 
-module.exports={saveScan,getRecentScans,getScansByTarget,getReportById}
+//function to get stats for the recharts
+function getScanStats()
+{
+    const dailyScans= db.prepare(`SELECT DATE(scannedAt) as date,COUNT(*) as total, AVG(finalScore) as avgScore FROM scans WHERE scannedAt >= DATE('now', '-7 days')
+        GROUP BY DATE(scannedAt) ORDER BY date ASC`).all()
+    
+    const threatDistribution= db.prepare(`SELECT threatLevel, COUNT(*) as count FROM scans GROUP BY threatLevel`).all()
+
+    const overall=db.prepare(`
+        SELECT 
+            COUNT(*) as totalScans,
+            AVG(finalScore) as avgScore,
+            MAX(finalScore) as highestThreat,
+            SUM(CASE WHEN threatLevel = 'CRITICAL' THEN 1 ELSE 0 END) as critical,
+            SUM(CASE WHEN threatLevel = 'DANGEROUS' THEN 1 ELSE 0 END) as dangerous,
+            SUM(CASE WHEN threatLevel = 'SUSPICIOUS' THEN 1 ELSE 0 END) as suspicious,
+            SUM(CASE WHEN threatLevel = 'SAFE' THEN 1 ELSE 0 END) as safe
+        FROM scans
+    `).get()
+
+    return{dailyScans,threatDistribution,overall}
+}
+
+
+module.exports={saveScan,getRecentScans,getScansByTarget,getReportById,getScanStats}

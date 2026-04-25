@@ -4,12 +4,19 @@ const router= express.Router()
 const {analyzeIP}= require('../services/threatAnalyser')
 const { getCacheStats } = require('../services/cache');
 const { scanURL } = require('../services/urlscanner')
-const {saveScan,getRecentScans,getScansByTarget,getReportById}= require('../database/scanRepository')
+const {saveScan,getRecentScans,getScansByTarget,getReportById,getScanStats}= require('../database/scanRepository')
 
 //route to get cache stats
 router.get('/cache/stats', (req, res) => {
     res.json(getCacheStats());
 });
+
+//route to get chart stats
+router.get('/stats',(req,res) => {
+  const stats = getScanStats()
+  res.json(stats)
+}
+)
 
 //function to check the the type of data
 function detectInputType(input) {
