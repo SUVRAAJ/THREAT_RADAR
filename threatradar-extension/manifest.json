@@ -1,0 +1,26 @@
+{
+  "manifest_version": 3,
+  "name": "ThreatRadar",
+  "version": "1.0",
+  "description": "Scan any IP, URL or domain for threats instantly using ThreatRadar.",
+  "permissions": [
+    "contextMenus",
+    "activeTab",
+    "storage"
+  ],
+  "host_permissions": [
+    "http://localhost:8080/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "ThreatRadar"
+  },
+  "icons": {
+    "16": "icon.png",
+    "48": "icon.png",
+    "128": "icon.png"
+  }
+}
