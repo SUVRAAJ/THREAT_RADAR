@@ -107,7 +107,7 @@ const Landing = () => {
           <button style={styles.btnPrimary} onClick={() => navigate('/dashboard')}>
             Start Scanning →
           </button>
-          <button style={styles.btnSecondary}>
+          <button style={styles.btnSecondary} onClick={()=> window.location.href="https://github.com/SUVRAAJ/THREAT_RADAR"}>
             View on GitHub
           </button>
         </div>
