@@ -1,5 +1,5 @@
 //Creating context menu when it is installed
-chrome.runtime.onInstalled.addEventListener(() => {
+chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.create({
     id:"scanWithThreatRadar",
     title:"scan With ThreatRadar",
@@ -8,7 +8,7 @@ chrome.runtime.onInstalled.addEventListener(() => {
 })
 
 //handle context menu click
-chrome.contextMenus.onclicked.addEventListener(() => {
+chrome.contextMenus.onClicked.addListener((info,tab) => {
   let target = ''
 
     if (info.menuItemId === 'scanWithThreatRadar') {

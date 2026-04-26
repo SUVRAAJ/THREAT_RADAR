@@ -76,7 +76,7 @@ function renderResult(data) {
             <div class="info-row"><span class="info-key">Tor Node</span><span class="info-val" style="color:#ff3c3c">YES ⚠</span></div>` : ''}
 
             ${data.scanId ? `
-            <button class="open-btn" onclick="window.open('http://localhost:5173/report/${data.id}')">
+            <button class="open-btn" id="openReportBtn">
                 Open Full Report →
             </button>` : ''}
         </div>
@@ -94,6 +94,14 @@ function renderResult(data) {
         if (vtBar) vtBar.style.width = `${vt.threatScore || 0}%`
         if (abuseBar) abuseBar.style.width = `${abuse.abuseScore || 0}%`
     }, 100)
+
+    
+    const openBtn = document.getElementById('openReportBtn')
+    if (openBtn) {
+        openBtn.addEventListener('click', () => {
+            chrome.tabs.create({ url: `http://localhost:5173/report/${data.scanId}` })
+        })
+    }
 }
 
 // Scan function
