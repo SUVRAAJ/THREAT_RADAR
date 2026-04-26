@@ -23,8 +23,7 @@ const Report = () => {
   async function fetchReport()
   {
     try {
-        const res=await fetch(`http://localhost:8080/scan/report/${id}`)
-        const data= await res.json()
+        const data = await api.get(`/scan/report/${id}`);
         
         if (data.error) throw new Error(data.error)
         setReport(data)

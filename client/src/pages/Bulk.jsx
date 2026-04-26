@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 import { useState } from 'react'
 import ThreatBadge from '../components/ThreatBadge'
 import useIsMobile from '../hooks/useIsMobile'
-
+import api from '../utilities/api'
 
 const Bulk = () => {
   const isMobile= useIsMobile()
@@ -34,13 +34,7 @@ const Bulk = () => {
 
     try {
       //
-      const res= await fetch('http://localhost:8080/scan/bulk',{
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({targets})
-      })
-
-      const data = await res.json()
+      const data= await api.post("/scan/bulk", { targets });
       setResults(data)
     } catch (err) {
       setError(err.message)

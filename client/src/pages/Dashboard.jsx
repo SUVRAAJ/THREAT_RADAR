@@ -31,8 +31,9 @@ const Dashboard = () => {
 
     try {
       //calling the api for scan
-      const res= await fetch(`http://localhost:8080/scan/analyze?target=${target.trim()}`)
-      const data= await res.json()
+      const data = await api.get(
+  `/scan/analyze?target=${encodeURIComponent(target.trim())}`
+);
       
       if (data.error) throw new Error(data.error)
       setReport(data)

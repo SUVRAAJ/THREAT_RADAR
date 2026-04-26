@@ -56,12 +56,10 @@ const History = () => {
   const fetchAll=async () => {
     try {
       //calling the history from the backend and the scan stats
-      const [histRes, statsRes] = await Promise.all([
-        fetch('http://localhost:8080/scan/history'),
-        fetch('http://localhost:8080/scan/stats')
-      ])
-      const histData = await histRes.json()
-      const statsData = await statsRes.json()
+      const [histData, statsData] = await Promise.all([
+  api.get("/scan/history"),
+  api.get("/scan/stats"),
+]);
       setScans(histData)
       setStats(statsData)
     } catch (err) {
