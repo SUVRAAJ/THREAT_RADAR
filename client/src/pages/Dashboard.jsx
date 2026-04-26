@@ -6,7 +6,10 @@ import ThreatBadge from '../components/ThreatBadge'
 import IPCard from '../components/IPcard'
 import EngineList from '../components/Enginelist'
 import { generateThreatReport } from '../utilities/generatePDF'
+import useIsMobile from '../hooks/useIsMobile'
+
 const Dashboard = () => {
+  const isMobile= useIsMobile()
   const navigate= useNavigate()
   const [target, setTarget] = useState('')
   const [error, setError] = useState(null)
@@ -79,7 +82,7 @@ const Dashboard = () => {
       </nav>
 
       {/* Search */}
-      <div style={{ padding: '48px 48px 0' }}>
+      <div style={{ padding: isMobile ? '16px 16px 48px' : '48px 48px 48px'}}>
         <div style={{ display: 'flex', gap: '0', marginBottom: '48px' }}>
           <input
             value={target}
@@ -131,7 +134,7 @@ const Dashboard = () => {
   <div style={{ animation: 'fadeUp 0.5s ease forwards' }}>
     
     {/* Top row */}
-    <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '16px', marginBottom: '16px' }}>
+    <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 340px', gap: '16px', marginBottom: '16px' }}>
       
       {/* Main threat card */}
       <div style={{ background: '#111', border: '1px solid #1a1a1a', padding: '28px' }}>

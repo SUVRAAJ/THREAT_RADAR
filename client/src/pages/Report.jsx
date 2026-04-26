@@ -6,19 +6,20 @@ import ScoreBar from '../components/ScoreBar'
 import IPCard from '../components/IPcard'
 import EngineList from '../components/Enginelist'
 import { generateThreatReport } from '../utilities/generatePDF'
-
+import useIsMobile from '../hooks/useIsMobile'
 const Report = () => {
-const { id } = useParams()
+  const isMobile= useIsMobile()
+  const { id } = useParams()
   const navigate = useNavigate()
   const [report, setReport] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [copied, setCopied] = useState(false)
-
+  
   useEffect(() => {
     fetchReport()
   }, [id])
-
+  
   async function fetchReport()
   {
     try {
@@ -63,7 +64,7 @@ const { id } = useParams()
         </button>
       </nav>
 
-      <div style={{ padding: '48px' }}>
+      <div style={{oadding: isMobile ? '24px 16px' : '48px' }}>
 
         {loading && (
           <div style={{ textAlign: 'center', padding: '80px 0', color: '#333', fontSize: '13px', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
@@ -90,7 +91,7 @@ const { id } = useParams()
                   {report.target}
                 </div>
               </div>
-              <div style={{ display: 'flex', gap: '12px' }}>
+              <div style={{ display: 'flex', gap: isMobile ? '12px' : '12px',flexDirection: isMobile ? 'column' : 'row' }}>
                 <button
                   onClick={handleCopy}
                   style={{
@@ -123,7 +124,7 @@ const { id } = useParams()
             {/* Main grid */}
             {report.fullReport && (
               <>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '16px', marginBottom: '16px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 340px', gap: '16px', marginBottom: '16px' }}>
                   <div style={{ background: '#111', border: '1px solid #1a1a1a', padding: '28px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
                       <div style={{ fontSize: '11px', color: '#444', letterSpacing: '0.12em', textTransform: 'uppercase' }}>

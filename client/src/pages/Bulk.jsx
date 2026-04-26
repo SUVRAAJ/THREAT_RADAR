@@ -3,8 +3,11 @@ import { useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
 import { useState } from 'react'
 import ThreatBadge from '../components/ThreatBadge'
+import useIsMobile from '../hooks/useIsMobile'
+
 
 const Bulk = () => {
+  const isMobile= useIsMobile()
   const navigate= useNavigate()
   //initialising valid states
   const [input, setInput] = useState('')
@@ -82,7 +85,7 @@ const Bulk = () => {
         </div>
       </nav>
 
-      <div style={{ padding: '48px' }}>
+      <div style={{ padding: isMobile ? '24px 16px' : '48px' }}>
         <div style={{ marginBottom: '32px' }}>
           <div style={{ fontSize: '11px', color: '#444', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '8px' }}>// Bulk Scanner</div>
           <div style={{ fontSize: '24px', fontWeight: 500, color: '#fff' }}>Scan Multiple Targets</div>
@@ -90,7 +93,7 @@ const Bulk = () => {
         </div>
 
         {/* Input */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 200px', gap: '0', marginBottom: '32px', alignItems: 'stretch' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 200px', gap: '0', marginBottom: '32px', alignItems: 'stretch' }}>
           <textarea
             value={input}
             onChange={e => setInput(e.target.value)}
@@ -135,7 +138,7 @@ const Bulk = () => {
         {/* Summary */}
         {results && (
           <div style={{ animation: 'fadeUp 0.5s ease forwards' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '1px', background: '#1a1a1a', marginBottom: '24px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(5, 1fr)', gap: '1px', background: '#1a1a1a', marginBottom: '24px' }}>
               {[
                 { label: 'Total', val: results.summary.total, color: '#fff' },
                 { label: 'Successful', val: results.summary.successful, color: '#00d084' },
@@ -153,7 +156,7 @@ const Bulk = () => {
             {/* Results table */}
             <div style={{ border: '1px solid #1a1a1a' }}>
               <div style={{
-                display: 'grid', gridTemplateColumns: '1fr 80px 100px 140px',
+                display: 'grid', gridTemplateColumns: isMobile ? '1fr 120px' : '1fr 80px 100px 140px',
                 padding: '12px 20px', borderBottom: '1px solid #1a1a1a', background: '#111'
               }}>
                 {['Target', 'Type', 'Score', 'Threat Level'].map(h => (
