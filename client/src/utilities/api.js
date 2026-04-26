@@ -2,14 +2,12 @@ import axios from "axios";
 
 const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
-const instance = axios.create({
-  baseURL: BASE_URL,
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
 
 export const api = {
-  get: (path) => instance.get(path).then((res) => res.data),
-  post: (path, body) => instance.post(path, body).then((res) => res.data),
-};
+    get: (path) => fetch(`${BASE_URL}${path}`).then(r => r.json()),
+    post: (path, body) => fetch(`${BASE_URL}${path}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+    }).then(r => r.json())
+}
