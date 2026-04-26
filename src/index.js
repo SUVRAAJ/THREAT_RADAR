@@ -6,7 +6,7 @@ const scanRouter= require('./routes/scan')
 const cors= require('cors')
 //middlewares
 app.use(cors({
-  origin: 'http://localhost:5173'
+    origin: process.env.ALLOWED_ORIGIN || 'http://localhost:5173'
 }))
 app.use(express.json())
 //routers
