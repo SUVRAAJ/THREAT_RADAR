@@ -7,7 +7,7 @@ import {
   ResponsiveContainer, BarChart, Bar, Cell, Legend
 } from 'recharts'
 import useIsMobile from '../hooks/useIsMobile'
-
+import { api } from '../utilities/api'
 
 /////
 const CustomTooltip = ({ active, payload, label }) => {

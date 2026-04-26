@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 import { useState } from 'react'
 import ThreatBadge from '../components/ThreatBadge'
 import useIsMobile from '../hooks/useIsMobile'
-import api from '../utilities/api'
+import {api} from '../utilities/api'
 
 const Bulk = () => {
   const isMobile= useIsMobile()

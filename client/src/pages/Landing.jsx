@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-
+import { api } from '../utilities/api'
 const features = [
   { title: 'Multi-Engine Scanning', desc: 'Cross-reference against 90+ professional security engines simultaneously via VirusTotal.' },
   { title: 'Unified Threat Score', desc: 'Weighted 70/30 scoring model combining VirusTotal and AbuseIPDB into one final risk score.' },

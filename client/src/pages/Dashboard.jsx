@@ -7,7 +7,7 @@ import IPCard from '../components/IPcard'
 import EngineList from '../components/Enginelist'
 import { generateThreatReport } from '../utilities/generatePDF'
 import useIsMobile from '../hooks/useIsMobile'
-
+import { api } from '../utilities/api'
 const Dashboard = () => {
   const isMobile= useIsMobile()
   const navigate= useNavigate()
